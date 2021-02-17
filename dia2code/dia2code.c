@@ -130,7 +130,7 @@ int is_present(namelist list, const char *name) {
 
 void * my_malloc( size_t size ) {
     void * tmp;
-    tmp = malloc(size);
+    tmp = calloc(size, 1);
     if (tmp == NULL) {
         fprintf(stderr, "Out of memory\n");
         exit(1);

@@ -44,7 +44,7 @@ struct umlattribute {
     char name[80];
     char value[80];
     char type [80];
-    char comment [80];
+    char *comment;
     char visibility;
     char isabstract;
     char isstatic;
@@ -116,7 +116,7 @@ struct umlclass {
     char id[80];
     char name[80];
     char stereotype[80];
-    char comment[80];
+    char *comment;
     int isabstract;
     umlattrlist attributes;
     umloplist operations;

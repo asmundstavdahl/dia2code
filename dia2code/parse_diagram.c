@@ -40,6 +40,17 @@ void parse_dia_string(xmlNodePtr stringnode, char *buffer) {
     free(content);
 }
 
+char *parse_long_dia_string(xmlNodePtr stringnode) {
+    xmlChar *content = xmlNodeGetContent(stringnode);
+    char *string = (char *)calloc(strlen(content), sizeof(xmlChar));
+    strcpy(string, content);
+    free(content);
+    // Null out last char ('#')
+    string[strlen(string) - 1] = 0;
+    // Skip first char ('#')
+    return string + 1;
+}
+
 int parse_boolean(xmlNodePtr booleannode) {
     xmlChar *val;
     int result;
@@ -180,9 +191,10 @@ void parse_attribute(xmlNodePtr node, umlattribute *tmp) {
             }
         } else if ( ! strcmp("comment", nodename)) {
             if (node->xmlChildrenNode->xmlChildrenNode != NULL) {
-               parse_dia_string(node->xmlChildrenNode, tmp->comment);
+               if (tmp->comment != NULL) free(tmp->comment);
+               tmp->comment = parse_long_dia_string(node->xmlChildrenNode);
             } else {
-               tmp->comment[0] = 0;
+               tmp->comment = (char *)calloc(0, sizeof(char));
           }
         } else if ( ! strcmp("kind", nodename)) {
             attrval = xmlGetProp(node->xmlChildrenNode, "val");
@@ -431,9 +443,10 @@ umlclasslist parse_class(xmlNodePtr class) {
             parse_geom_height(attribute->xmlChildrenNode, &myself->geom );
         } else if ( ! strcmp("comment", attrname))  {
             if (attribute->xmlChildrenNode->xmlChildrenNode != NULL) {
-               parse_dia_string(attribute->xmlChildrenNode, myself->comment);
+               if (myself->comment != NULL) free(myself->comment);
+               myself->comment = parse_long_dia_string(attribute->xmlChildrenNode);
             }  else {
-               myself->comment[0] = 0;
+               myself->comment = (char *)calloc(0, sizeof(char));
             }
         } else if ( ! strcmp("stereotype", attrname) ) {
             if ( attribute->xmlChildrenNode->xmlChildrenNode != NULL ) {
